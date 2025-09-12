@@ -13,7 +13,6 @@ docs = {
     "spec.txt": "These specifications define the technical requirements for the equipment.",
 }
 
-# TODO: Write a tool to read a doc
 @mcp.tool(
     name="read_doc_contents",
     description="Read the contents of a document and return it as a string."
@@ -26,7 +25,6 @@ def read_document(
     
     return docs[doc_id]
 
-# TODO: Write a tool to edit a doc
 @mcp.tool(
     name="edit_document",
     description="Edit a document by replacing a string in the documents content with a new string."
@@ -41,7 +39,6 @@ def edit_document(
     
     docs[doc_id] = docs[doc_id].replace(old_str, new_str)
 
-# Tool to list all available documents
 @mcp.tool(
     name="list_documents",
     description="List all available document IDs"
@@ -49,7 +46,6 @@ def edit_document(
 def list_documents():
     return list(docs.keys())
 
-# TODO: Write a resource to return all doc id's
 @mcp.resource(
     uri="docs://list",
     name="Document List",
@@ -58,7 +54,6 @@ def list_documents():
 def list_docs():
     return list(docs.keys())
 
-# TODO: Write a resource to return the contents of a particular doc
 @mcp.resource(
     uri="docs://content/{doc_id}",
     name="Document Content",
@@ -69,7 +64,6 @@ def get_doc_content(doc_id: str):
         raise ValueError(f"Doc with id {doc_id} not found")
     return docs[doc_id]
 
-# TODO: Write a prompt to rewrite a doc in markdown format
 @mcp.prompt(
     name="markdown_rewrite",
     description="Rewrite a document's content in markdown format"
@@ -94,7 +88,6 @@ def markdown_rewrite(
         "model": model
     }
 
-
 @mcp.prompt(
     name="summarize_doc",
     description="Summarize a document's content"
@@ -118,8 +111,29 @@ def summarize_doc(
         "model": model
     }
     
+@mcp.prompt(
+    name="extract_key_points",
+    description="Extract key points from a document's content"
+)
+def extract_key_points(
+    doc_id: str = Field(description="Id of the document to analyze"),
+    system: str = Field(description="System prompt for the model"),
+    model: str = Field(description="Model to use for extraction")
+):
+    if doc_id not in docs:
+        raise ValueError(f"Doc with id {doc_id} not found")
+    content = docs[doc_id]
+    return {
+        "system": system,
+        "messages": [
+            {
+                "role": "user", 
+                "content": f"Please extract and list the key points from the following content:\n\n{content}"
+            }
+        ],
+        "model": model
+    }
 
-# TODO: Write a prompt to summarize a doc
 
 
 
