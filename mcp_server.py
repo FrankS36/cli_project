@@ -42,9 +42,77 @@ def edit_document(
     docs[doc_id] = docs[doc_id].replace(old_str, new_str)
 
 # TODO: Write a resource to return all doc id's
+@mcp.resource(
+    uri="docs://list",
+    name="Document List",
+    description="A list of all document ids"
+)
+def list_docs():
+    return list(docs.keys())
+
 # TODO: Write a resource to return the contents of a particular doc
+@mcp.resource(
+    uri="docs://content/{doc_id}",
+    name="Document Content",
+    description="The content of a specific document"
+)
+def get_doc_content(doc_id: str):
+    if doc_id not in docs:
+        raise ValueError(f"Doc with id {doc_id} not found")
+    return docs[doc_id]
+
 # TODO: Write a prompt to rewrite a doc in markdown format
+@mcp.prompt(
+    name="markdown_rewrite",
+    description="Rewrite a document's content in markdown format"
+)
+def markdown_rewrite(
+    doc_id: str = Field(description="Id of the document to rewrite"),
+    system: str = Field(description="System prompt for the model"),
+    model: str = Field(description="Model to use for rewriting")
+):
+    if doc_id not in docs:
+        raise ValueError(f"Doc with id {doc_id} not found")
+
+    content = docs[doc_id]
+    return {
+        "system": system,
+        "messages": [
+            {
+                "role": "user",
+                "content": f"Please rewrite the following content in markdown format:\n\n{content}"
+            }
+        ],
+        "model": model
+    }
+
+
+@mcp.prompt(
+    name="summarize_doc",
+    description="Summarize a document's content"
+)
+def summarize_doc(
+    doc_id: str = Field(description="Id of the document to summarize"),
+    system: str = Field(description="System prompt for the model"),
+    model: str = Field(description="Model to use for summarizing")
+):
+    if doc_id not in docs:
+        raise ValueError(f"Doc with id {doc_id} not found")
+    content = docs[doc_id]
+    return {
+        "system": system,
+        "messages": [
+            {
+                "role": "user",
+                "content": f"Please summarize the following content:\n\n{content}"
+            }
+        ],
+        "model": model
+    }
+    
+
 # TODO: Write a prompt to summarize a doc
+
 
 
 if __name__ == "__main__":
