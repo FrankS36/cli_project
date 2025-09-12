@@ -64,9 +64,18 @@ class MCPClient:
         # TODO: Get a particular prompt defined by the MCP server
         return []
 
+    async def list_resources(self) -> list[types.Resource]:
+        # List all available resources from the MCP server
+        result = await self.session().list_resources()
+        print(f"DEBUG - list_resources() result: {result}")
+        return result.resources
+
     async def read_resource(self, uri: str) -> Any:
-        # TODO: Read a resource, parse the contents and return it
-        return []
+        # Read a resource, parse the contents and return it
+        print(f"DEBUG - reading resource: {uri}")
+        result = await self.session().read_resource(uri)
+        print(f"DEBUG - read_resource() result: {result}")
+        return result
 
     async def cleanup(self):
         await self._exit_stack.aclose()
@@ -86,8 +95,19 @@ async def main():
         # If using Python without UV, update command to 'python' and remove "run" from args.
         command="uv",
         args=["run", "mcp_server.py"],
-    ) as _client:
-        pass
+    ) as client:
+        # Test listing resources
+        print("=== Testing Resources ===")
+        resources = await client.list_resources()
+        print(f"Available resources: {[r.uri for r in resources]}")
+        
+        # Test reading the document list resource
+        if resources:
+            for resource in resources:
+                if "list" in str(resource.uri):
+                    result = await client.read_resource(str(resource.uri))
+                    print(f"Document list: {result}")
+                    break
 
 
 if __name__ == "__main__":

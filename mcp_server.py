@@ -41,6 +41,14 @@ def edit_document(
     
     docs[doc_id] = docs[doc_id].replace(old_str, new_str)
 
+# Tool to list all available documents
+@mcp.tool(
+    name="list_documents",
+    description="List all available document IDs"
+)
+def list_documents():
+    return list(docs.keys())
+
 # TODO: Write a resource to return all doc id's
 @mcp.resource(
     uri="docs://list",

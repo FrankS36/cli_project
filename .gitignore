@@ -175,3 +175,6 @@ Thumbs.db
 .env.local
 .env.production
 .env.development
+
+# Test reports (generated automatically)
+test_report_*.json
